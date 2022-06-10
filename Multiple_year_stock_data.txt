@@ -1,0 +1,86 @@
+Attribute VB_Name = "Module1"
+Sub Mutiple_year_stock_data():
+   For Each ws In Worksheets
+
+'Headers Name
+      ws.Range("I1").Value = "Ticker"
+      ws.Range("J1").Value = "Yearly Change"
+      ws.Range("K1").Value = "Percent Change"
+      ws.Range("L1").Value = "Total Stock Volume"
+
+'variables
+      Dim ticker As String
+      Dim Open_Price As Double
+      Dim Close_Price As Double
+      Dim Yearly_Change As Double
+      Dim Percent_Change As Double
+      Dim Price_Row As Long
+      Price_Row = 2
+      
+'stock volume
+      Total = 0
+      
+      Dim Summary_Table_Row As Integer
+      Summary_Table_Row = 2
+      
+'Lastrow
+      lastrow = ws.Cells(Rows.Count, 1).End(xlUp).Row
+      
+      'Loop through column A, find different stock names and add stock volume together
+      
+      For i = 2 To lastrow:
+            If ws.Cells(i + 1, 1).Value <> ws.Cells(i, 1).Value Then
+            
+'Ticker Name
+               ticker = ws.Cells(i, 1).Value
+               
+'Ticker name Vaule
+               ws.Range("I" & Summary_Table_Row).Value = ticker
+               
+'stock volume total
+               Total = Total + ws.Range("G" & i).Value
+                        
+'Print total stock volume
+               ws.Range("L" & Summary_Table_Row).Value = Total
+               
+'Calculating yearly change
+               Open_Price = ws.Range("C" & Price_Row).Value
+               Close_Price = ws.Range("F" & i).Value
+               Yearly_Change = Close_Price - Open_Price
+               
+'Calculating percent change
+                  If Open_Price = 0 Then
+                      Percent_Change = 0
+                     Else
+                         Percent_Change = Yearly_Change / Open_Price
+                  End If
+                 
+'yearly change Vaules
+                ws.Range("J" & Summary_Table_Row).Value = Yearly_Change
+                  
+'percent change Vauules
+                ws.Range("K" & Summary_Table_Row).Value = Percent_Change
+                 ws.Range("K" & Summary_Table_Row).NumberFormat = "0.00%"
+                  
+'highlighting + changes in green
+                        If ws.Range("J" & Summary_Table_Row).Value > 0 Then
+                            ws.Range("J" & Summary_Table_Row).Interior.ColorIndex = 4
+                        Else
+'highlighting - changes in red
+                            ws.Range("J" & Summary_Table_Row).Interior.ColorIndex = 3
+                        End If
+                  
+'summary table row
+                  Summary_Table_Row = Summary_Table_Row + 1
+                  Price_Row = i + 1
+               
+'total stock volume
+                  Total = 0
+            Else
+              Total = Total + ws.Range("G" & i).Value
+                 
+            End If
+                      
+       Next i
+   Next ws
+End Sub
